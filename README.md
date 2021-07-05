@@ -2,8 +2,16 @@
 几个常见的排序算法的CPP实现：
 
 1. 冒泡排序
+
 2. 插入排序
+
 3. 选择排序
+
+4. 快速排序 :star:
+
+5. 归并排序 :star:
+
+   
 
 
 
@@ -227,13 +235,152 @@ PS E:\sort_cpp\code> .\insertion_sort.exe
 
 
 
+## 快速排序
+
+快速排序的基本思想：通过一趟排序将待排记录分隔成独立的两部分，其中一部分记录的关键字均比另一部分的关键字小，则可分别对这两部分记录继续进行排序，以达到整个序列有序。
+
+- 从数列中挑出一个元素，称为 “基准”（pivot）；
+- 重新排序数列，所有元素比基准值小的摆放在基准前面，所有元素比基准值大的摆在基准的后面（相同的数可以到任一边）。在这个分区退出之后，该基准就处于数列的中间位置。这个称为分区（partition）操作；
+- 递归地（recursive）把小于基准值元素的子数列和大于基准值元素的子数列排序。
+
+```C++
+// 快排模板
+// 作者：yxc
+// 链接：https://www.acwing.com/blog/content/277/
+// 来源：AcWing
+void quick_sort(int q[], int l, int r)
+{
+    if (l >= r) return;
+
+    int i = l - 1, j = r + 1, x = q[l + r >> 1];
+    while (i < j)
+    {
+        do i ++ ; while (q[i] < x);   // i = l - 1;
+        do j -- ; while (q[j] > x);   // j = r + 1;
+        if (i < j) swap(q[i], q[j]);  
+    }
+    quick_sort(q, l, j);          // 用i要保证不用到q的左边界，x取值那也要调整。
+    quick_sort(q, j + 1, r); 
+}
+```
+
+代码：[快速排序 ](https://www.acwing.com/problem/content/787/)
+
+```C++
+#include <iostream>
+
+using namespace std;
+
+const int N = 100010;
+int q[N];
+int n;
+
+void quick_sort(int q[], int l, int r) {
+    if (l >= r) return;
+    
+    int i = l - 1, j = r + 1;
+    int x = q[l + (r - l) / 2];
+    while (i < j) {
+        do {
+            i++;
+        }while (q[i] < x);
+        
+        do{
+            j--;
+        }while(q[j] > x);
+        
+        if (i < j) swap(q[i], q[j]);
+    }
+    quick_sort(q, l, j);
+    quick_sort(q, j + 1, r);
+}
+
+
+int main() {
+    cin >> n;
+    for (int i = 0; i < n; ++i) cin >> q[i];
+    quick_sort(q, 0, n - 1);
+    for (int i = 0; i < n; ++i) cout << q[i] << ' ';
+    return 0;
+}
+```
 
 
 
+## 归并排序 
 
+归并排序的核心思想是**分治**。如果要排序一个数组，我们先把数组从中间分成前后两部分，然后对前后两部分分别排序，再将排好序的两部分合并在一起，这样整个数组就都有序了。
 
+- 把长度为n的输入序列分成两个长度为n/2的子序列；
+- 对这两个子序列分别采用归并排序；
+- 将两个排序好的子序列合并成一个最终的排序序列。
 
+```C++
+// 归并排序模板
+// 作者：yxc
+// 链接：https://www.acwing.com/blog/content/277/
+// 来源：AcWing
+void merge_sort(int q[], int l, int r)
+{
+    if (l >= r) return;
 
+    int mid = l + r >> 1;
+    merge_sort(q, l, mid);
+    merge_sort(q, mid + 1, r);
+
+    int k = 0, i = l, j = mid + 1;
+    while (i <= mid && j <= r)
+        if (q[i] <= q[j]) tmp[k ++ ] = q[i ++ ];
+        else tmp[k ++ ] = q[j ++ ];
+
+    while (i <= mid) tmp[k ++ ] = q[i ++ ];
+    while (j <= r) tmp[k ++ ] = q[j ++ ];
+
+    for (i = l, j = 0; i <= r; i ++, j ++ ) q[i] = tmp[j];
+}
+```
+
+代码：[归并排序](https://www.acwing.com/problem/content/789/)
+
+```C++ 
+#include <iostream>
+
+using namespace std;
+
+const int N = 100010;
+int q[N];
+int temp[N];
+
+void merge_sort(int q[], int l, int r) {
+    if (l >= r) return;
+    
+    int mid = l + (r - l) / 2;
+    merge_sort(q, l, mid);
+    merge_sort(q, mid + 1, r);
+    
+    int k = 0, i = l, j = mid + 1;
+    while (i <= mid && j <= r) {
+        if (q[i] <= q[j]) temp[k++] = q[i++];
+        else temp[k++] = q[j++];
+    }
+    
+    while (i <= mid) temp[k++] = q[i++];
+    while (j <= r) temp[k++] = q[j++];
+    
+    for (int i = l, j = 0; i <= r; ++i, ++j) 
+        q[i] = temp[j];
+    
+}
+
+int main() {
+    int n;
+    cin >> n;
+    for (int i = 0; i < n; ++i) cin >> q[i];
+    merge_sort(q, 0, n - 1);
+    for (int i = 0; i < n; ++i) cout << q[i] << ' ';
+    return 0;
+}
+```
 
 
 
